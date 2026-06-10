@@ -1,0 +1,5 @@
+outs:
+- md5: 5868a13176ee280dc1246c88cc919156
+  size: 9494677
+  hash: md5
+  path: procurement_transactions.csv

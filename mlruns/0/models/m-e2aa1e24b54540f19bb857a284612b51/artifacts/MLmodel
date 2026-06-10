@@ -1,0 +1,23 @@
+artifact_path: /home/umesh/Projects/Procurement Copilot/mlruns/0/models/m-e2aa1e24b54540f19bb857a284612b51/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.9
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.13.0
+model_id: m-e2aa1e24b54540f19bb857a284612b51
+model_size_bytes: 326445
+model_uuid: m-e2aa1e24b54540f19bb857a284612b51
+prompts: null
+run_id: 6ca07bc463e7402c836a6d3792428431
+utc_time_created: '2026-06-10 13:51:41.118040'

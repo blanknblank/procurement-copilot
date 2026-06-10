@@ -1,4 +1,6 @@
 import pandas as pd
+import mlflow
+import mlflow.sklearn
 
 df = pd.read_csv('data/procurement_transactions.csv')
 
@@ -94,6 +96,7 @@ train = monthly_df.iloc[:train_size]
 test = monthly_df.iloc[train_size:]
 
 from xgboost import XGBRegressor
+from sklearn.metrics import mean_absolute_percentage_error
 
 model = XGBRegressor(
     n_estimators=200,
@@ -102,23 +105,58 @@ model = XGBRegressor(
     random_state=42
 )
 
-model.fit(
-    train[features],
-    train[target]
-)
+# model.fit(
+#     train[features],
+#     train[target]
+# )
 
-predictions = model.predict(
-    test[features]
-)
+# predictions = model.predict(
+#     test[features]
+# )
 
-from sklearn.metrics import mean_absolute_percentage_error
 
-mape = mean_absolute_percentage_error(
-    test[target],
-    predictions
-)
+# mape = mean_absolute_percentage_error(
+#     test[target],
+#     predictions
+# )
+# print("MAPE:", round(mape * 100, 2), "%")
 
-print("MAPE:", round(mape * 100, 2), "%")
+
+X_train = train[features]
+y_train = train[target]
+X_test,y_test = test[features],test[target]
+
+
+with mlflow.start_run():
+
+    model.fit(X_train, y_train)
+
+    predictions = model.predict(X_test)
+
+    mape = mean_absolute_percentage_error(
+        y_test,
+        predictions
+    )
+
+    mlflow.log_param(
+        "n_estimators",
+        200
+    )
+
+    mlflow.log_param(
+        "max_depth",
+        5
+    )
+
+    mlflow.log_metric(
+        "mape",
+        mape
+    )
+
+    mlflow.sklearn.log_model(
+        model,
+        "spend_forecaster"
+    )
 
 importance = pd.DataFrame({
     "feature": features,
@@ -130,7 +168,16 @@ importance.sort_values(
     ascending=False
 )
 
-print(importance)
+# print(importance)
+
+importance.to_csv(
+    "models/feature_importance.csv",
+    index=False
+)
+
+mlflow.log_artifact(
+    "models/feature_importance.csv"
+)
 
 import joblib
 
@@ -139,4 +186,11 @@ joblib.dump(
     "models/spend_forecaster.pkl"
 )
 
+
+
 joblib.dump(le, "models/category_encoder.pkl")
+
+mlflow.sklearn.log_model(
+    sk_model=model,
+    artifact_path="spend_forecaster"
+)
