@@ -9,3 +9,11 @@ __pycache__/
 models/*.pkl
 
 data/*.csv
+
+# DVC
+.dvc/cache/
+.dvc/tmp/
+
+# ML artifacts
+mlruns/.dvc/cache/
+.dvc/tmp/
