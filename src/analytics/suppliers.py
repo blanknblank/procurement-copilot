@@ -2,7 +2,7 @@ import pandas as pd
 from src.data_loader import df
 # df = pd.read_csv("data/procurement_transactions.csv")
 
-def top_suppliers():
+def get_top_suppliers():
 
     result = (
         df.groupby("supplier")["spend"]
