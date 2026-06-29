@@ -1,18 +1,14 @@
 import joblib
+import pandas as pd
 
 model = joblib.load("models/spend_forecaster.pkl")
 encoder = joblib.load("models/category_encoder.pkl")
 
-def predict(features_df):
-    prediction = model.predict(features_df)
-    return float(prediction[0])
 
-import pandas as pd
-
-def predict_spend(data):
+def predict_spend(data: dict):
 
     df = pd.DataFrame([data])
 
     prediction = model.predict(df)
 
-    return prediction[0]
+    return float(prediction[0])
