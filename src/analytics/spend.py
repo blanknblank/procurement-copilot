@@ -1,6 +1,6 @@
 import pandas as pd
-
-df = pd.read_csv("data/procurement_transactions.csv")
+from src.data_loader import df
+# df = pd.read_csv("data/procurement_transactions.csv")
 
 def category_spend():
 
