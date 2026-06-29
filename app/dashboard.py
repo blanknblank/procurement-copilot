@@ -30,13 +30,8 @@ col4.metric("Orders", total_orders)
 col5.metric('eww',33)
 
 
-category_spend = (
-
-    df.groupby('category')["spend"]
-    .sum()
-    .reset_index()
-    .sort_values('spend',ascending=False)
-)
+from src.analytics.summary import get_summary
+from src.analytics.spend import category_spend
 
 fig = px.bar(
     category_spend,
