@@ -3,8 +3,14 @@ import mlflow
 import mlflow.sklearn
 
 df = pd.read_csv('data/procurement_transactions.csv')
+from pathlib import Path
 
 
+project_root = Path(__file__).parent
+
+mlflow.set_tracking_uri(
+    f"sqlite:///{project_root}/mlflow.db"
+)
 # #### Forecast
 df["order_date"] = pd.to_datetime(df["order_date"])
 
@@ -127,7 +133,7 @@ y_train = train[target]
 X_test,y_test = test[features],test[target]
 
 
-with mlflow.start_run():
+with mlflow.start_run() as run:
 
     model.fit(X_train, y_train)
 
@@ -139,13 +145,18 @@ with mlflow.start_run():
     )
 
     mlflow.log_param(
-        "n_estimators",
-        200
+    "n_estimators",
+    model.n_estimators
     )
 
     mlflow.log_param(
         "max_depth",
-        5
+        model.max_depth
+    )
+
+    mlflow.log_param(
+        "learning_rate",
+        model.learning_rate
     )
 
     mlflow.log_metric(
@@ -157,27 +168,33 @@ with mlflow.start_run():
         model,
         "spend_forecaster"
     )
+    model_uri = (
+    f"runs:/{run.info.run_id}/spend_forecaster"
+    )
+    mlflow.register_model(
+        model_uri=model_uri,
+        name="SpendForecaster"
+    )
+    importance = pd.DataFrame({
+        "feature": features,
+        "importance": model.feature_importances_
+    })
 
-importance = pd.DataFrame({
-    "feature": features,
-    "importance": model.feature_importances_
-})
+    importance.sort_values(
+        "importance",
+        ascending=False
+    )
 
-importance.sort_values(
-    "importance",
-    ascending=False
-)
+    # print(importance)
 
-# print(importance)
+    importance.to_csv(
+        "models/feature_importance.csv",
+        index=False
+    )
 
-importance.to_csv(
-    "models/feature_importance.csv",
-    index=False
-)
-
-mlflow.log_artifact(
-    "models/feature_importance.csv"
-)
+    mlflow.log_artifact(
+        "models/feature_importance.csv"
+    )
 
 import joblib
 
@@ -190,7 +207,3 @@ joblib.dump(
 
 joblib.dump(le, "models/category_encoder.pkl")
 
-mlflow.sklearn.log_model(
-    sk_model=model,
-    artifact_path="spend_forecaster"
-)

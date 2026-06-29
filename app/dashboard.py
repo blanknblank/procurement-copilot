@@ -431,9 +431,16 @@ Potential Savings: {potential_savings}
 
 if ask_button:
 
-    answer = ask_copilot(
-        user_question,
-        analytics_context
-    )
+    try:
+        answer = ask_copilot(
+            user_question,
+            analytics_context
+        )
+        st.write(answer)
+
+    except Exception as e:
+        st.error(
+            f"Copilot unavailable: {e}"
+        )
 
     st.write(answer)

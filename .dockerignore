@@ -1,0 +1,15 @@
+.git
+.dvc
+.mlflow
+
+venv
+__pycache__
+
+.ipynb_checkpoints
+
+*.pyc
+
+notebooks
+
+.gitignore
+
