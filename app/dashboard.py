@@ -1,6 +1,8 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
+import requests
+
 st.set_page_config(
     page_title="Procurement Intelligence",
     layout="wide"
@@ -12,14 +14,14 @@ df = pd.read_csv("data/procurement_transactions.csv")
 
 st.write(df.head())
 
-total_spend = df["spend"].sum()
+summary = requests.get(
+    "http://127.0.0.1:8000/analytics/summary"
+).json()
 
-total_suppliers = df["supplier"].nunique()
-
-total_categories = df["category"].nunique()
-
-total_orders = len(df)
-
+total_spend = summary["total_spend"]
+total_suppliers = summary["total_suppliers"]
+total_categories = summary["total_categories"]
+total_orders = summary["total_orders"]
 
 col1, col2, col3, col4 ,col5= st.columns(5)
 
@@ -30,8 +32,13 @@ col4.metric("Orders", total_orders)
 col5.metric('eww',33)
 
 
-from src.analytics.summary import get_summary
-from src.analytics.spend import category_spend
+category_spend = requests.get(
+    "http://127.0.0.1:8000/analytics/category-spend"
+).json()
+
+category_spend = pd.DataFrame(category_spend)
+
+
 
 fig = px.bar(
     category_spend,
