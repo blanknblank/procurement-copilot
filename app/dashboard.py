@@ -127,27 +127,11 @@ st.dataframe(
     )
 )
 
+anomalies = requests.get(
+    "http://127.0.0.1:8000/analytics/price-anomalies"
+).json()
 
-price_stats = (
-    df.groupby("item")["unit_price"]
-      .agg(["mean", "std"])
-      .reset_index()
-)
-
-price_check = df.merge(
-    price_stats,
-    on="item"
-)
-
-price_check["z_score"] = (
-    (price_check["unit_price"] - price_check["mean"])
-    / price_check["std"]
-)
-
-anomalies = price_check[
-    abs(price_check["z_score"]) > 2
-]
-
+anomalies = pd.DataFrame(anomalies)
 
 st.subheader("Price Variance Anomalies")
 
