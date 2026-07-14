@@ -49,12 +49,11 @@ fig = px.bar(
 st.plotly_chart(fig, use_container_width=True)
 
 
-supplier_spend = (
-    df.groupby('supplier')['spend']
-    .sum()
-    .reset_index()
-    .sort_values('spend',ascending=False)
-)
+supplier_spend = requests.get(
+    "http://127.0.0.1:8000/analytics/top-suppliers"
+).json()
+
+supplier_spend = pd.DataFrame(supplier_spend)
 
 fig = px.bar(
     supplier_spend.head(10),
@@ -200,19 +199,17 @@ supplier_spend = (
       .reset_index()
 )
 
-total_spend = supplier_spend["spend"].sum()
+supplier_total_spend = supplier_spend["spend"].sum()
 
 supplier_spend["share"] = (
-    supplier_spend["spend"] / total_spend
+    supplier_spend["spend"] / supplier_total_spend
 )
 
 tail_spend = supplier_spend[
     supplier_spend["share"] < 0.01
 ]
 
-summary = requests.get(
-    "http://127.0.0.1:8000/analytics/summary"
-).json()
+
 
 total_spend=summary["total_spend"]
 
