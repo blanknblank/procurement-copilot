@@ -147,21 +147,11 @@ st.dataframe(
 ) 
 
 
-supplier_spend = (
-    df.groupby("supplier")["spend"]
-      .sum()
-      .reset_index()
-)
+tail_spend = requests.get(
+    "http://127.0.0.1:8000/analytics/tail-spend"
+).json()
 
-supplier_total_spend = supplier_spend["spend"].sum()
-
-supplier_spend["share"] = (
-    supplier_spend["spend"] / supplier_total_spend
-)
-
-tail_spend = supplier_spend[
-    supplier_spend["share"] < 0.01
-]
+tail_spend = pd.DataFrame(tail_spend)
 
 
 
