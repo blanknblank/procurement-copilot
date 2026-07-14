@@ -76,11 +76,11 @@ df["month"] = (
       .astype(str)
 )
 
-monthly_spend = (
-    df.groupby("month")["spend"]
-      .sum()
-      .reset_index()
-)
+monthly_spend = requests.get(
+    "http://127.0.0.1:8000/analytics/monthly-trend"
+).json()
+
+monthly_spend = pd.DataFrame(monthly_spend)
 
 fig = px.line(
     monthly_spend,
