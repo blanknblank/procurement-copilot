@@ -210,6 +210,12 @@ tail_spend = supplier_spend[
     supplier_spend["share"] < 0.01
 ]
 
+summary = requests.get(
+    "http://127.0.0.1:8000/analytics/summary"
+).json()
+
+total_spend=summary["total_spend"]
+
 st.subheader("Tail Spend Suppliers")
 
 st.dataframe(tail_spend)
