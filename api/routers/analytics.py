@@ -7,6 +7,8 @@ from src.analytics.monthly_trend import get_monthly_trend
 from src.analytics.consolidation import get_supplier_consolidation
 from src.analytics.anamolies import get_price_anomalies
 from src.analytics.tail_spend import get_tail_spend
+from src.analytics.maverick import get_maverick_spend
+
 
 router = APIRouter(
     prefix="/analytics",
@@ -47,3 +49,8 @@ def price_anomalies_api():
 def tail_spend_api():
 
     return get_tail_spend()
+
+@router.get("/maverick-spend")
+def maverick_spend_api():
+
+    return get_maverick_spend()

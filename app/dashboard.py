@@ -163,36 +163,20 @@ st.dataframe(tail_spend)
 
 
 
-preferred_suppliers = {
-    "IT Hardware": ["Lenovo"],
-    "Software": ["Microsoft"],
-    "Marketing": ["Publicis"],
-    "Logistics": ["BlueDart"],
-    "Office Supplies": ["Office Depot"]
-}
-
-def is_maverick(row):
-    return row["supplier"] not in preferred_suppliers[row["category"]]
-
-df["maverick"] = df.apply(
-    is_maverick,
-    axis=1
-)
- 
-maverick_spend = df[
-    df["maverick"]
-]
+maverick = requests.get(
+    "http://127.0.0.1:8000/analytics/maverick-spend"
+).json()
 
 st.subheader("Maverick Spend")
 
 st.metric(
     "Maverick Transactions",
-    len(maverick_spend)
+    maverick["transactions"]
 )
 
 st.metric(
     "Maverick Spend Value",
-    f"₹{maverick_spend['spend'].sum():,.0f}"
+    f"₹{maverick['spend'].sum():,.0f}"
 )
 # ==================================
 # FORECAST SECTION
