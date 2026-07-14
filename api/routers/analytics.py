@@ -4,7 +4,7 @@ from src.analytics.summary import get_summary
 from src.analytics.spend import category_spend
 from src.analytics.suppliers import get_top_suppliers
 from src.analytics.monthly_trend import get_monthly_trend
-
+from src.analytics.consolidation import get_supplier_consolidation
 
 router = APIRouter(
     prefix="/analytics",
@@ -30,3 +30,8 @@ def top_suppliers_api():
 def monthly_trend_api():
 
     return get_monthly_trend()
+
+@router.get("/supplier-consolidation")
+def supplier_consolidation_api():
+
+    return get_supplier_consolidation()

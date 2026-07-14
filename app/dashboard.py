@@ -113,41 +113,11 @@ filtered_df = df[
     df["category"].isin(selected_category)
 ]
 
+consolidation = requests.get(
+    "http://127.0.0.1:8000/analytics/supplier-consolidation"
+).json()
 
-supplier_item_price = (
-    df.groupby(["item", "supplier"])["unit_price"]
-      .mean()
-      .reset_index()
-)
-
-cheapest_supplier = (
-    supplier_item_price
-    .sort_values("unit_price")
-    .groupby("item")
-    .first()
-    .reset_index()
-)
-
-cheapest_supplier.columns = [
-    "item",
-    "best_supplier",
-    "best_price"
-]
-
-consolidation = supplier_item_price.merge(
-    cheapest_supplier,
-    on="item"
-)
-
-consolidation["price_difference"] = (
-    consolidation["unit_price"]
-    - consolidation["best_price"]
-)
-
-consolidation = consolidation[
-    consolidation["price_difference"] > 0
-]
-
+consolidation = pd.DataFrame(consolidation)
 st.subheader("Supplier Consolidation Opportunities")
 
 st.dataframe(
