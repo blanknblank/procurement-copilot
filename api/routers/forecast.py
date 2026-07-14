@@ -1,7 +1,10 @@
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from src.forecasting import predict_spend
+from src.forecasting import (
+    predict_spend,
+    forecast_next_month
+)
 
 router = APIRouter(
     prefix="/forecast",
@@ -31,3 +34,13 @@ def forecast(request: ForecastRequest):
     return {
         "forecast": round(prediction, 2)
     }
+
+
+@router.get("/next-month")
+def next_month_forecast():
+
+    forecast = forecast_next_month()
+
+    return forecast.to_dict(
+        orient="records"
+    )
