@@ -9,7 +9,7 @@ def get_dashboard_summary():
     import requests
 
     summary = requests.get(
-        "http://127.0.0.1:8000/analytics/summary"
+        "http://api:8000/analytics/summary"
     ).json()
 
     total_spend = summary["total_spend"]

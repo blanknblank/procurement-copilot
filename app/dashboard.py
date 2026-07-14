@@ -1,8 +1,7 @@
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import requests
-
+from app.api_client import get,post
 st.set_page_config(
     page_title="Procurement Intelligence",
     layout="wide"
@@ -14,11 +13,10 @@ df = pd.read_csv("data/procurement_transactions.csv")
 
 st.write(df.head())
 
-summary = requests.get(
-    "http://127.0.0.1:8000/analytics/summary"
-).json()
+summary = get(
+    "/analytics/summary"
+)
 
-total_spend = summary["total_spend"]
 total_suppliers = summary["total_suppliers"]
 total_categories = summary["total_categories"]
 total_orders = summary["total_orders"]
@@ -32,9 +30,10 @@ col4.metric("Orders", total_orders)
 col5.metric('eww',33)
 
 
-category_spend = requests.get(
-    "http://127.0.0.1:8000/analytics/category-spend"
-).json()
+
+category_spend = get(
+    "/analytics/category-spend"
+)
 
 category_spend = pd.DataFrame(category_spend)
 
@@ -49,9 +48,9 @@ fig = px.bar(
 st.plotly_chart(fig, use_container_width=True)
 
 
-supplier_spend = requests.get(
-    "http://127.0.0.1:8000/analytics/top-suppliers"
-).json()
+supplier_spend = get(
+    "/analytics/top-suppliers"
+)
 
 supplier_spend = pd.DataFrame(supplier_spend)
 
@@ -76,9 +75,9 @@ df["month"] = (
       .astype(str)
 )
 
-monthly_spend = requests.get(
-    "http://127.0.0.1:8000/analytics/monthly-trend"
-).json()
+monthly_spend = get(
+    "/analytics/monthly-trend"
+)
 
 monthly_spend = pd.DataFrame(monthly_spend)
 
@@ -113,9 +112,9 @@ filtered_df = df[
     df["category"].isin(selected_category)
 ]
 
-consolidation = requests.get(
-    "http://127.0.0.1:8000/analytics/supplier-consolidation"
-).json()
+consolidation = get(
+    "/analytics/supplier-consolidation"
+)
 
 consolidation = pd.DataFrame(consolidation)
 st.subheader("Supplier Consolidation Opportunities")
@@ -127,9 +126,9 @@ st.dataframe(
     )
 )
 
-anomalies = requests.get(
-    "http://127.0.0.1:8000/analytics/price-anomalies"
-).json()
+anomalies = get(
+    "/analytics/price-anomolies"
+)
 
 anomalies = pd.DataFrame(anomalies)
 
@@ -147,10 +146,9 @@ st.dataframe(
 ) 
 
 
-tail_spend = requests.get(
-    "http://127.0.0.1:8000/analytics/tail-spend"
-).json()
-
+tail_spend = get(
+    "/analytics/tail-spend"
+)
 tail_spend = pd.DataFrame(tail_spend)
 
 
@@ -163,9 +161,9 @@ st.dataframe(tail_spend)
 
 
 
-maverick = requests.get(
-    "http://127.0.0.1:8000/analytics/maverick-spend"
-).json()
+maverick = get(
+    "/analytics/maverick-spend"
+)
 
 st.subheader("Maverick Spend")
 
@@ -176,7 +174,7 @@ st.metric(
 
 st.metric(
     "Maverick Spend Value",
-    f"₹{maverick['spend'].sum():,.0f}"
+    f"₹{maverick['spend']:,.0f}"
 )
 # ==================================
 # FORECAST SECTION
@@ -186,9 +184,9 @@ import joblib
 
 st.header("Spend Forecast")
 
-forecast_table = requests.get(
-    "http://127.0.0.1:8000/forecast/next-month"
-).json()
+forecast_table = get(
+    "/forecast/next-month"
+)
 
 forecast_table = pd.DataFrame(forecast_table)
 
@@ -239,9 +237,7 @@ top_category = (
 
 total_spend = int(df["spend"].sum())
 
-maverick_spend_value = int(
-    maverick_spend["spend"].sum()
-)
+
 
 potential_savings = int(
     consolidation["price_difference"].sum()
@@ -250,7 +246,6 @@ potential_savings = int(
 
 #copilot
 
-from copilot.procurement_copilot import ask_copilot
 analytics_context = f"""
 Total Spend: {total_spend}
 Top Supplier: {top_supplier}
@@ -261,12 +256,14 @@ Potential Savings: {potential_savings}
 if ask_button:
 
     try:
-        response = requests.post(
-    "http://127.0.0.1:8000/copilot/ask",
-    json={
+        response = answer = post(
+    "/copilot/ask",
+    {
         "question": user_question,
         "context": analytics_context
     }
+
+
 )
 
         answer = response.json()["answer"]
