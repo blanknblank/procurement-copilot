@@ -249,14 +249,7 @@ potential_savings = int(
 
 
 #copilot
-import sys,os 
 
-sys.path.append(
-    os.path.abspath(
-        os.path.join(os.path.dirname(__file__), "..")
-    )
-)
-  
 from copilot.procurement_copilot import ask_copilot
 analytics_context = f"""
 Total Spend: {total_spend}
@@ -268,10 +261,16 @@ Potential Savings: {potential_savings}
 if ask_button:
 
     try:
-        answer = ask_copilot(
-            user_question,
-            analytics_context
-        )
+        response = requests.post(
+    "http://127.0.0.1:8000/copilot/ask",
+    json={
+        "question": user_question,
+        "context": analytics_context
+    }
+)
+
+        answer = response.json()["answer"]
+
         st.write(answer)
 
     except Exception as e:

@@ -15,8 +15,8 @@ class CopilotRequest(BaseModel):
     context: str
 
 
-@router.post("/")
-def copilot(request: CopilotRequest):
+@router.post("/ask")
+def ask(request: CopilotRequest):
 
     answer = ask_copilot(
         request.question,
